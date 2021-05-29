@@ -9,8 +9,14 @@ daphne = "*"
 djangorestframework = "*"
 markdown = "*"
 django-filter = "*"
+cryptography = "*"
+psycopg2 = "*"
 
 [dev-packages]
+flake8 = "*"
+debugpy = "*"
+ipython = "*"
+django-extensions = "*"
 
 [requires]
 python_version = "3.9"

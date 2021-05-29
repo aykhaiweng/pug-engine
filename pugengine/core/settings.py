@@ -1,22 +1,23 @@
+"""
+List of available ENVs:
+- ENGINE_SECRET_KEY=
+- ENGINE_DEBUG=True
+- ENGINE_ALLOWED_HOSTS=example.com,anothersite.com
+- ENGINE_DATABASE_NAME=
+- ENGINE_DATABASE_USER=
+- ENGINE_DATABASE_PASSWORD=
+- ENGINE_DATABASE_HOST=
+- ENGINE_DATABASE_PORT=
+- ENGINE_DATABASE_ATOMIC_REQUESTS=
+"""
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY = os.getenv('ENGINE_SECRET_KEY', 'django-insecure-jxnfgj%r)grl&ljxr#u+x+1l&&3*w*riq2pv+_@=oo-re6bzbr')  # noqa: E501
+DEBUG = os.getenv('ENGINE_DEBUG', "True").lower() == "true"
+ALLOWED_HOSTS = os.getenv('ENGINE_ALLOWED_HOSTS', ",").split(',')
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jxnfgj%r)grl&ljxr#u+x+1l&&3*w*riq2pv+_@=oo-re6bzbr'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,6 +26,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+
+    'pugs',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -37,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'engine.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -63,8 +69,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('ENGINE_DATABASE_NAME'),
+        'USER': os.getenv('ENGINE_DATABASE_USER'),
+        'PASSWORD': os.getenv('ENGINE_DATABASE_PASSWORD'),
+        'HOST': os.getenv('ENGINE_DATABASE_HOST'),
+        'PORT': os.getenv('ENGINE_DATABASE_PORT', 5432),
+        'ATOMIC_REQUESTS': os.getenv('ENGINE_DATABASE_ATOMIC_REQUESTS', "True").lower() == "true"
     }
 }
 
@@ -110,4 +121,4 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.UUIDField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

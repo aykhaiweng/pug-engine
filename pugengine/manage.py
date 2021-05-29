@@ -4,6 +4,21 @@ import os
 import sys
 
 
+def initialize_debugger(debugger="debugpy"):
+    """
+    Initialize the debugger to use
+    """
+    debuggers = [
+        'debugpy'
+    ]
+    if debugger in debuggers:
+        if debugger == 'debugpy':
+            import debugpy
+            debugpy.listen(("0.0.0.0", "9999"))
+            print("Starting the debugpy for VSCode now, waiting...")
+            print("Debugger attached, starting server.Starting the debugpy for VSCode now, waiting...")
+
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
@@ -15,7 +30,17 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-    execute_from_command_line(sys.argv)
+
+    # localize the args
+    args = sys.argv
+
+    # Pop out the debugger flag if it's available
+    for i, arg in enumerate(args):
+        if arg.find("--debugger") != -1:
+            debugger = args.pop(i)
+            initialize_debugger(debugger)
+
+    execute_from_command_line(args)
 
 
 if __name__ == '__main__':

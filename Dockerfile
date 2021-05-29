@@ -7,16 +7,17 @@ LABEL maintainer="aykhaiweng@gmail.com"
 
 ENV PYTHONBUFFERED 1
 
-WORKDIR /opt/pugengine/
-COPY . /opt/pugengine/
+COPY . /opt/pug-engine/
+WORKDIR /opt/pug-engine/
 
 # System depedencies for Python
 RUN apk add --update --virtual \
     build-essential \
+    openssl-dev \
     libc-dev python3-dev gcc \
+    libffi-dev musl-dev cargo \
     g++ \
     postgresql-dev
-
 
 RUN pip install -U pip
 RUN pip install pipenv
@@ -28,7 +29,7 @@ RUN pip install pipenv
 FROM base as primary
 RUN pipenv lock --requirements > /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
-ENTRYPOINT ["python3", "manage.py", "migrate", "&&", "python3", "-m", "manage.py", "runserver". "0.0.0.0:8000"]
+CMD ["python3", "manage.py", "migrate", "&&", "python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
 
 ############################################################
@@ -37,4 +38,4 @@ ENTRYPOINT ["python3", "manage.py", "migrate", "&&", "python3", "-m", "manage.py
 FROM primary as dev
 RUN pipenv lock --requirements --dev-only > /tmp/requirements-dev.txt
 RUN pip install -r /tmp/requirements-dev.txt
-ENTRYPOINT ["python3", "manage.py", "migrate", "&&", "python3", "-m", "debugpy", "--listen", "0.0.0.0:5678", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python3", "manage.py", "migrate", "&&", "python3", "manage.py", "runserver", "0.0.0.0:8000"]
